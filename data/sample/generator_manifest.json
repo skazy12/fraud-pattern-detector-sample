@@ -1,0 +1,25 @@
+{
+  "generator_version": "1.0.0",
+  "seed": 42,
+  "generation_mode": "sample",
+  "generation_timestamp_utc": "2026-10-09T14:00:00Z",
+  "observation_start_utc": "2026-01-10T00:00:00Z",
+  "observation_end_utc": "2026-01-11T00:00:00Z",
+  "customer_count": 5,
+  "device_count": 5,
+  "transaction_count": 19,
+  "injected_scenario_counts": {
+    "R001": 1,
+    "R002": 1,
+    "R003": 1,
+    "R004": 1,
+    "R005": 1
+  },
+  "injected_quality_defect_counts": {
+    "Q004": 1,
+    "Q005": 1,
+    "Q006": 1,
+    "Q009A": 1,
+    "Q009B": 1
+  }
+}

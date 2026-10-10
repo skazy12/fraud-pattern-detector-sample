@@ -1,0 +1,14 @@
+{
+  "batch_id": "batch_full_01",
+  "raw_input_dir": "../data/raw",
+  "exported_at_utc": "2026-10-10T11:49:41.404311900Z",
+  "total_scored_transactions": 49999,
+  "total_fraud_alerts": 537,
+  "alert_rate_pct": 1.07,
+  "risk_levels": {
+    "LOW": 49463,
+    "MEDIUM": 1,
+    "HIGH": 534,
+    "CRITICAL": 1
+  }
+}

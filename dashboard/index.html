@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detector de Patrones de Fraude — Cuadro de Mando Ejecutivo</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.75);
+      --border-color: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --accent: #818cf8;
+      --low-color: #10b981;
+      --medium-color: #f59e0b;
+      --high-color: #f97316;
+      --critical-color: #ef4444;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Scrollbar Estilizado */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-title h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-title p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .batch-badge {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 2.1rem;
+      font-weight: 700;
+    }
+
+    .kpi-subtext {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Full Width Timeline Row */
+    .timeline-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .timeline-card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 380px;
+    }
+
+    .chart-card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    /* Tables Grid & Scroll Controls */
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .table-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+    }
+
+    input[type="text"], select {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    /* Contenedor deslizable individual para tablas */
+    .table-scroll-container {
+      max-height: 340px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #0f172a;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 10;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr:hover td {
+      background: rgba(30, 41, 59, 0.5);
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    .badge-LOW { background: rgba(16, 185, 129, 0.15); color: var(--low-color); border: 1px solid var(--low-color); }
+    .badge-MEDIUM { background: rgba(245, 158, 11, 0.15); color: var(--medium-color); border: 1px solid var(--medium-color); }
+    .badge-HIGH { background: rgba(249, 115, 22, 0.15); color: var(--high-color); border: 1px solid var(--high-color); }
+    .badge-CRITICAL { background: rgba(239, 68, 68, 0.15); color: var(--critical-color); border: 1px solid var(--critical-color); }
+
+    .rule-tag {
+      background: rgba(129, 140, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      margin-right: 4px;
+      font-family: monospace;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-title">
+        <h1>Detector de Patrones de Fraude — Cuadro de Mando Ejecutivo</h1>
+        <p>Evaluación de Riesgos Batch en Tiempo Real y Observabilidad Antifraude</p>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div class="batch-badge" id="batchBadge">Lote: Cargando...</div>
+        <div class="batch-badge" style="border-color: var(--accent); color: var(--accent); background: rgba(129, 140, 248, 0.1);" id="originBadge">Origen: Cargando...</div>
+        <div class="batch-badge" style="border-color: var(--text-muted); color: var(--text-muted); background: rgba(148, 163, 184, 0.1);" id="timeBadge">Fecha: Cargando...</div>
+      </div>
+    </header>
+
+    <!-- Tarjetas KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Transacciones Evaluadas</div>
+        <div class="kpi-value" id="kpiTotalScored">0</div>
+        <div class="kpi-subtext">Procesadas por la Capa Gold</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Alertas de Fraude</div>
+        <div class="kpi-value" style="color: var(--critical-color);" id="kpiTotalAlerts">0</div>
+        <div class="kpi-subtext">Puntaje de Riesgo > 0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Tasa de Alerta</div>
+        <div class="kpi-value" style="color: var(--medium-color);" id="kpiAlertRate">0.0%</div>
+        <div class="kpi-subtext">Porcentaje sobre transacciones del lote</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Riesgo Crítico y Alto</div>
+        <div class="kpi-value" style="color: var(--high-color);" id="kpiCriticalHigh">0</div>
+        <div class="kpi-subtext">Requiere atención inmediata</div>
+      </div>
+    </div>
+
+    <!-- NUEVO: Gráfico de Línea de Tiempo de Alertas -->
+    <div class="timeline-card">
+      <h2>Evolución Temporal de Alertas de Fraude por Día (Enero 2026)</h2>
+      <div id="timelineChart" style="height: 280px;"></div>
+    </div>
+
+    <!-- Gráficos Principales -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h2>Distribución por Nivel de Riesgo</h2>
+        <div id="riskChart" style="height: 300px;"></div>
+      </div>
+      <div class="chart-card">
+        <h2>Frecuencia de Activación por Regla (R001–R005)</h2>
+        <div id="ruleChart" style="height: 300px;"></div>
+      </div>
+    </div>
+
+    <!-- Resumen de Perfil de Riesgo por Cliente con Deslizador/Scroll propio -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>Resumen de Riesgo por Cliente</h2>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">↕ Usa el deslizador interno para navegar por los clientes</span>
+      </div>
+      <div class="table-scroll-container">
+        <table id="customerTable">
+          <thead>
+            <tr>
+              <th>ID Cliente</th>
+              <th>Nombre / Ref</th>
+              <th>Perfil</th>
+              <th>Total Tx</th>
+              <th>Puntaje Promedio</th>
+              <th>Puntaje Máx</th>
+              <th>Total Alertas</th>
+            </tr>
+          </thead>
+          <tbody id="customerTableBody">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Cargando resumen de clientes...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Registro de Alertas de Fraude con Deslizador/Scroll propio -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>Registro de Alertas de Fraude</h2>
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Buscar Cliente / ID de Alerta..." onkeyup="filterAlerts()">
+          <select id="levelFilter" onchange="filterAlerts()">
+            <option value="ALL">Todos los Niveles</option>
+            <option value="CRITICAL">CRÍTICO</option>
+            <option value="HIGH">ALTO</option>
+            <option value="MEDIUM">MEDIO</option>
+            <option value="LOW">BAJO</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-scroll-container" style="max-height: 420px;">
+        <table id="alertsTable">
+          <thead>
+            <tr>
+              <th>ID Alerta</th>
+              <th>Fecha / Hora (UTC)</th>
+              <th>Cliente</th>
+              <th>Monto</th>
+              <th>País</th>
+              <th>Puntaje</th>
+              <th>Nivel</th>
+              <th>Reglas Activadas</th>
+              <th>Dispositivo</th>
+            </tr>
+          </thead>
+          <tbody id="alertsTableBody">
+            <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Cargando alertas de fraude...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer>
+      Fraud Pattern Detector V1.0 • Apache Spark 3.5 & Scala 3 Engine • Exportación Estática para Observabilidad
+    </footer>
+  </div>
+
+  <script>
+    let rawAlerts = [];
+
+    async function loadDashboardData() {
+      try {
+        const kpis = await fetch('data/summary_kpis.json').then(r => r.json());
+        const rules = await fetch('data/rule_statistics.json').then(r => r.json());
+        const customers = await fetch('data/customer_risk_summary.json').then(r => r.json());
+        rawAlerts = await fetch('data/fraud_alerts.json').then(r => r.json());
+        let timeline = [];
+        try {
+          timeline = await fetch('data/daily_timeline.json').then(r => r.json());
+        } catch(e) { console.log("Timeline no disponible aún"); }
+
+        // Actualizar KPIs y etiquetas
+        document.getElementById('batchBadge').innerText = `Lote: ${kpis.batch_id}`;
+        document.getElementById('originBadge').innerText = `Origen: ${kpis.raw_input_dir || '../data/raw'}`;
+        const tsFormatted = kpis.exported_at_utc ? kpis.exported_at_utc.replace('T', ' ').substring(0, 19) + ' UTC' : 'N/A';
+        document.getElementById('timeBadge').innerText = `Fecha Lote: ${tsFormatted}`;
+
+        document.getElementById('kpiTotalScored').innerText = Number(kpis.total_scored_transactions).toLocaleString();
+        document.getElementById('kpiTotalAlerts').innerText = Number(kpis.total_fraud_alerts).toLocaleString();
+        document.getElementById('kpiAlertRate').innerText = `${kpis.alert_rate_pct}%`;
+        document.getElementById('kpiCriticalHigh').innerText = Number((kpis.risk_levels.CRITICAL || 0) + (kpis.risk_levels.HIGH || 0)).toLocaleString();
+
+        // Renderizar gráficos
+        renderTimelineChart(timeline);
+        renderRiskChart(kpis.risk_levels);
+        renderRuleChart(rules);
+        renderCustomers(customers);
+        renderAlerts(rawAlerts);
+
+      } catch (err) {
+        console.error("Error cargando datos del dashboard:", err);
+      }
+    }
+
+    function renderTimelineChart(timeline) {
+      if (!timeline || timeline.length === 0) return;
+
+      const dates = timeline.map(t => t.date);
+      const alerts = timeline.map(t => t.alerts_count);
+
+      const trace = {
+        x: dates,
+        y: alerts,
+        type: 'scatter',
+        mode: 'lines+markers',
+        fill: 'tozeroy',
+        name: 'Alertas Diarias',
+        line: { color: '#f97316', width: 3 },
+        marker: { size: 6, color: '#ef4444' },
+        fillcolor: 'rgba(249, 115, 22, 0.15)'
+      };
+
+      const layout = {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        xaxis: {
+          title: 'Fecha',
+          titlefont: { color: '#94a3b8' },
+          tickfont: { color: '#94a3b8' },
+          gridcolor: '#1e293b'
+        },
+        yaxis: {
+          title: 'Alertas Detectadas',
+          titlefont: { color: '#94a3b8' },
+          tickfont: { color: '#94a3b8' },
+          gridcolor: '#1e293b'
+        },
+        margin: { t: 10, b: 40, l: 50, r: 20 }
+      };
+
+      Plotly.newPlot('timelineChart', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function renderRiskChart(levels) {
+      const labels = ['BAJO (LOW)', 'MEDIO (MEDIUM)', 'ALTO (HIGH)', 'CRÍTICO (CRITICAL)'];
+      const values = [levels.LOW || 0, levels.MEDIUM || 0, levels.HIGH || 0, levels.CRITICAL || 0];
+
+      const data = [{
+        values: values,
+        labels: labels,
+        type: 'pie',
+        hole: 0.55,
+        marker: {
+          colors: ['#10b981', '#f59e0b', '#f97316', '#ef4444']
+        },
+        textinfo: 'value+percent',
+        textfont: { color: '#ffffff', size: 12 },
+        insidetextorientation: 'radial'
+      }];
+
+      const layout = {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        showlegend: true,
+        legend: {
+          font: { color: '#94a3b8', size: 11 },
+          orientation: 'h',
+          y: -0.1
+        },
+        margin: { t: 10, b: 40, l: 10, r: 10 }
+      };
+
+      Plotly.newPlot('riskChart', data, layout, { responsive: true, displayModeBar: false });
+    }
+
+    function renderRuleChart(rules) {
+      const ruleNamesEs = {
+        "R001": "R001: Ráfaga (10m)",
+        "R002": "R002: Monto Elevado",
+        "R003": "R003: Cambio País (60m)",
+        "R004": "R004: Rechazos Repetidos",
+        "R005": "R005: Dispositivo Desconocido"
+      };
+
+      const xVals = rules.map(r => ruleNamesEs[r.rule_id] || r.rule_id);
+      const yVals = rules.map(r => r.activations);
+
+      const data = [{
+        x: xVals,
+        y: yVals,
+        type: 'bar',
+        text: yVals.map(v => v > 0 ? v.toLocaleString() : ''),
+        textposition: 'auto',
+        marker: {
+          color: ['#38bdf8', '#818cf8', '#f97316', '#ef4444', '#10b981'],
+          line: { color: '#1e293b', width: 1 }
+        }
+      }];
+
+      const layout = {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        xaxis: { tickfont: { color: '#94a3b8', size: 11 } },
+        yaxis: { title: 'Activaciones', titlefont: { color: '#94a3b8' }, tickfont: { color: '#94a3b8' }, gridcolor: '#1e293b' },
+        margin: { t: 20, b: 60, l: 50, r: 20 }
+      };
+
+      Plotly.newPlot('ruleChart', data, layout, { responsive: true, displayModeBar: false });
+    }
+
+    function renderCustomers(customers) {
+      const tbody = document.getElementById('customerTableBody');
+      tbody.innerHTML = customers.map(c => `
+        <tr>
+          <td style="font-family: monospace; color: var(--primary); font-weight: 600;">${c.customer_id}</td>
+          <td>${c.customer_name}</td>
+          <td><span class="badge badge-${c.risk_profile}">${c.risk_profile}</span></td>
+          <td>${c.total_transactions.toLocaleString()}</td>
+          <td>${c.avg_risk_score} pts</td>
+          <td>${c.max_risk_score} pts</td>
+          <td><strong style="${c.total_alerts > 0 ? 'color: var(--high-color);' : ''}">${c.total_alerts}</strong></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAlerts(alerts) {
+      const tbody = document.getElementById('alertsTableBody');
+      if (alerts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No hay alertas de fraude que coincidan con el filtro.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = alerts.map(a => `
+        <tr>
+          <td style="font-family: monospace; font-weight: 600; color: var(--primary);">${a.alert_id}</td>
+          <td>${a.transaction_timestamp.replace('T', ' ').replace('Z', '')}</td>
+          <td>${a.customer_name} <br><small style="color: var(--text-muted); font-family: monospace;">${a.customer_id}</small></td>
+          <td><strong>${a.amount} ${a.currency}</strong></td>
+          <td>${a.country}</td>
+          <td><strong>${a.risk_score} pts</strong></td>
+          <td><span class="badge badge-${a.risk_level}">${a.risk_level}</span></td>
+          <td>${a.triggered_rules.map(r => `<span class="rule-tag">${r}</span>`).join('')}</td>
+          <td>${a.known_device ? '<span style="color: var(--low-color);">✓ Registrado</span>' : '<span style="color: var(--critical-color);">⚠ Desconocido</span>'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterAlerts() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const level = document.getElementById('levelFilter').value;
+
+      const filtered = rawAlerts.filter(a => {
+        const matchesSearch = a.alert_id.toLowerCase().includes(search) ||
+                              a.customer_id.toLowerCase().includes(search) ||
+                              a.customer_name.toLowerCase().includes(search);
+        const matchesLevel = (level === 'ALL') || (a.risk_level === level);
+        return matchesSearch && matchesLevel;
+      });
+
+      renderAlerts(filtered);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDashboardData);
+  </script>
+</body>
+</html>

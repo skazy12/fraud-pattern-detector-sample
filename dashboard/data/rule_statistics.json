@@ -1,0 +1,7 @@
+[
+  {"rule_id": "R001", "rule_name": "Velocity Burst (10m)", "points": 20, "activations": 0, "activation_pct": 0.0},
+  {"rule_id": "R002", "rule_name": "High Amount Threshold", "points": 30, "activations": 2, "activation_pct": 0.0},
+  {"rule_id": "R003", "rule_name": "Rapid Country Change (60m)", "points": 40, "activations": 535, "activation_pct": 1.07},
+  {"rule_id": "R004", "rule_name": "Repeated Declines (15m)", "points": 15, "activations": 1, "activation_pct": 0.0},
+  {"rule_id": "R005", "rule_name": "Unknown Device Combo", "points": 10, "activations": 172, "activation_pct": 0.34}
+]

@@ -1,0 +1,11 @@
+{
+  "batch_id": "batch_full_01",
+  "export_timestamp_utc": "2026-10-10T11:49:41.404311900Z",
+  "files": [
+    "summary_kpis.json",
+    "rule_statistics.json",
+    "customer_risk_summary.json",
+    "fraud_alerts.json",
+    "daily_timeline.json"
+  ]
+}

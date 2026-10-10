@@ -1,0 +1,40 @@
+# Java, Scala & sbt Build Artifacts
+target/
+project/target/
+project/project/
+.bsp/
+.metals/
+.idea/
+.vscode/
+*.class
+*.jar
+*.log
+
+# Spark Warehouse & Windows Hadoop Utilities
+spark-warehouse/
+winutils/
+
+# Python Cache & Virtual Environments
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+env/
+venv/
+
+# Generated Pipeline Datasets (exclude batch-generated data)
+data/raw/*
+data/bronze/*
+data/silver/*
+data/quarantine/*
+data/gold/*
+data/rejected/*
+
+# Retain sample fixture directory and structure
+!data/sample/
+!data/sample/**
+!.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
