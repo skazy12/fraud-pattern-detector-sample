@@ -15,7 +15,14 @@ El proyecto implementa una arquitectura **Medallion (Bronze ➔ Silver ➔ Gold)
 
 ## 📊 Vista Previa del Dashboard Ejecutivo
 
-![Dashboard Ejecutivo Antifraude](docs/images/dashboard_preview.png)
+### 1. Indicadores KPI Ejecutivos y Evolución Temporal de Alertas (Enero 2026)
+![KPIs y Línea de Tiempo de Alertas](docs/images/dashboard_timeline.png)
+
+### 2. Distribución por Nivel de Riesgo y Frecuencia de Reglas (R001–R005)
+![Distribución de Riesgo y Frecuencia por Regla](docs/images/dashboard_charts.png)
+
+### 3. Resumen de Riesgo por Cliente y Registro Interactivo de Alertas
+![Resumen por Cliente y Registro de Alertas](docs/images/dashboard_alerts.png)
 
 ---
 
